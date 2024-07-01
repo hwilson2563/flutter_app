@@ -206,6 +206,11 @@ class GeneratorPage extends StatelessWidget {
                       colorScheme:
                           ColorScheme.fromSeed(seedColor: Color(0xFFFFFF00))),
                   child: NewCard(pair: pair)),
+                  Theme(
+                  data: ThemeData(
+                      colorScheme:
+                          ColorScheme.fromSeed(seedColor: Color(0xFF23D0D0))),
+                  child: NewCard(pair: pair)),
               Theme(
                   data: ThemeData(
                       colorScheme:
@@ -219,17 +224,17 @@ class GeneratorPage extends StatelessWidget {
               Theme(
                   data: ThemeData(
                       colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color.fromARGB(255, 0, 42, 254))),
+                          seedColor: Color(0xFF002AFE))),
                   child: NewCard(pair: pair)),
               Theme(
                   data: ThemeData(
                       colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color.fromARGB(255, 114, 0, 254))),
+                          seedColor: Color(0xFF7200FE))),
                   child: NewCard(pair: pair)),
               Theme(
                   data: ThemeData(
                       colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color.fromARGB(255, 254, 0, 190),)),
+                          seedColor: Color(0xFFFE00BE),)),
                   child: NewCard(pair: pair)),
             ],
           ),
@@ -263,17 +268,17 @@ class GeneratorPage extends StatelessWidget {
               Theme(
                   data: ThemeData(
                       colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color.fromARGB(255, 0, 42, 254), brightness: Brightness.dark)),
+                          seedColor: Color(0xFF002AFE), brightness: Brightness.dark)),
                   child: NewCard(pair: pair)),
               Theme(
                   data: ThemeData(
                       colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color.fromARGB(255, 114, 0, 254), brightness: Brightness.dark)),
+                          seedColor: Color(0xFF7200FE), brightness: Brightness.dark)),
                   child: NewCard(pair: pair)),
               Theme(
                   data: ThemeData(
                       colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color.fromARGB(255, 254, 0, 190), brightness: Brightness.dark,)),
+                          seedColor: Color(0xFFFE00BE), brightness: Brightness.dark,)),
                   child: NewCard(pair: pair)),
             ],
           ),
