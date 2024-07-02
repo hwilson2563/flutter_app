@@ -1,10 +1,12 @@
+import 'package:badges/badges.dart';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:namer_app/theme/theme_provider.dart';
-import 'package:namer_app/theme/theme_provider.dart';
+
+
+import 'package:badges/badges.dart' as badge;
 
 void main() {
   runApp(ChangeNotifierProvider(
@@ -194,95 +196,108 @@ class GeneratorPage extends StatelessWidget {
               Theme(
                   data: ThemeData(
                       colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFFFF0000))),
+                          ColorScheme.fromSeed(
+                            seedColor: Color(0xFFFF0000), 
+                            dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                            )),
                   child: NewCard(pair: pair)),
               Theme(
                   data: ThemeData(
                       colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFFFF8C00))),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFFFFFF00))),
-                  child: NewCard(pair: pair)),
-                  Theme(
-                  data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFF23D0D0))),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFFB7FF01))),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFF1D6327))),
+                          ColorScheme.fromSeed(seedColor: Color(0xFFFF8C00),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,)),
                   child: NewCard(pair: pair)),
               Theme(
                   data: ThemeData(
                       colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color(0xFF002AFE))),
+                          seedColor: Color.fromARGB(255, 255, 255, 255),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,)),
+                  child: NewCard(pair: pair)),
+              Theme(
+                  data: ThemeData(
+                      colorScheme:
+                          ColorScheme.fromSeed(seedColor: Color(0xFF23D0D0),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,)),
+                  child: NewCard(pair: pair)),
+              Theme(
+                  data: ThemeData(
+                      colorScheme:
+                          ColorScheme.fromSeed(seedColor: Color(0xFFB7FF01),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,)),
+                  child: NewCard(pair: pair)),
+              Theme(
+                  data: ThemeData(
+                      colorScheme:
+                          ColorScheme.fromSeed(seedColor: Color(0xFF1D6327),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,)),
+                  child: NewCard(pair: pair)),
+              Theme(
+                  data: ThemeData(
+                      colorScheme:
+                          ColorScheme.fromSeed(seedColor: Color(0xFF002AFE),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,)),
+                  child: NewCard(pair: pair)),
+              Theme(
+                  data: ThemeData(
+                      colorScheme:
+                          ColorScheme.fromSeed(seedColor: Color(0xFF7200FE),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,)),
                   child: NewCard(pair: pair)),
               Theme(
                   data: ThemeData(
                       colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color(0xFF7200FE))),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color(0xFFFE00BE),)),
+                    seedColor: Color(0xFFFE00BE),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                  )),
                   child: NewCard(pair: pair)),
             ],
           ),
-           Wrap(
+          Wrap(
             children: [
               Theme(
                   data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFFFF0000), brightness: Brightness.dark)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFFFF8C00), brightness: Brightness.dark)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFFFFFF00), brightness: Brightness.dark)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFFB7FF01), brightness: Brightness.dark)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFF1D6327), brightness: Brightness.dark)),
+                      colorScheme: ColorScheme.fromSeed(
+                          seedColor: Color(0xFFFF0000),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark)),
                   child: NewCard(pair: pair)),
               Theme(
                   data: ThemeData(
                       colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color(0xFF002AFE), brightness: Brightness.dark)),
+                          seedColor: Color(0xFFFF8C00),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          
+                          brightness: Brightness.dark)),
                   child: NewCard(pair: pair)),
               Theme(
                   data: ThemeData(
                       colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color(0xFF7200FE), brightness: Brightness.dark)),
+                          seedColor: Color(0xFFFFFF00),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark)),
                   child: NewCard(pair: pair)),
               Theme(
                   data: ThemeData(
                       colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color(0xFFFE00BE), brightness: Brightness.dark,)),
+                          seedColor: Color(0xFFB7FF01),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark)),
+                  child: NewCard(pair: pair)),
+              Theme(
+                  data: ThemeData(
+                      colorScheme: ColorScheme.fromSeed(
+                          seedColor: Color(0xFF1D6327),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark)),
+                  child: NewCard(pair: pair)),
+              Theme(
+                  data: ThemeData(
+                      colorScheme: ColorScheme.fromSeed(
+                          seedColor: Color(0xFF002AFE),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark)),
+                  child: NewCard(pair: pair)),
+              Theme(
+                  data: ThemeData(
+                      colorScheme: ColorScheme.fromSeed(
+                          seedColor: Color(0xff6750a4),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark)),
+                  child: NewCard(pair: pair)),
+              Theme(
+                  data: ThemeData(
+                      colorScheme: ColorScheme.fromSeed(
+                    seedColor: Color(0xFFFE00BE),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                    brightness: Brightness.dark,
+                  )),
                   child: NewCard(pair: pair)),
             ],
           ),
-          
           SizedBox(height: 10),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -331,6 +346,8 @@ class NewCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(10.0),
         ),
         child: InkWell(
+          hoverColor: theme.hoverColor,
+          highlightColor: theme.colorScheme.primary,
           borderRadius: BorderRadius.circular(10.0),
           onTap: () async {
             print('hello');
@@ -355,11 +372,29 @@ class NewCard extends StatelessWidget {
                       children: [
                         Icon(Icons.home, color: theme.colorScheme.primary),
                         Icon(Icons.more_vert,
-                            color: theme.colorScheme.secondary),
+                            color: theme.colorScheme.onPrimaryFixed),
+                        badge.Badge(
+                          badgeStyle: BadgeStyle(
+                              shape: BadgeShape.circle,
+                              badgeColor:
+                                  theme.colorScheme.outline.withOpacity(.50)),
+                          position: BadgePosition.topEnd(top: 1.0, end: 1.0),
+                          showBadge: true,
+                          badgeContent: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: CustomToolTip(
+                              message: "Mobile Only",
+                              child: Icon(Icons.mobile_friendly,
+                                  color: theme.colorScheme.outlineVariant,
+                                  size: 22),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   Text('Title',
+                  style:TextStyle(color: theme.colorScheme.onPrimaryContainer),
                       maxLines: 3,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
@@ -369,10 +404,12 @@ class NewCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Icon(Icons.mobile_friendly,
-                          color: theme.colorScheme.secondary),
+                          color: theme.colorScheme.onPrimaryContainer.withOpacity(.5
+                          )),
                       Text(
                         'Mobile Only',
-                        selectionColor: theme.colorScheme.secondary,
+                        style:TextStyle(color: theme.colorScheme.onSecondaryContainer),
+                      
                       )
                     ],
                   )
@@ -382,6 +419,35 @@ class NewCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class CustomToolTip extends StatelessWidget {
+  /// The text need to show as the tooltip.
+  final String message;
+
+  /// The widget for which tooltip will be shown.
+  final Widget child;
+
+  const CustomToolTip({
+    super.key,
+    required this.message,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: message,
+      margin: const EdgeInsets.all(
+        10.0,
+      ),
+      showDuration: const Duration(seconds: 3),
+      padding: const EdgeInsets.all(
+        5.0,
+      ),
+      child: child,
     );
   }
 }
