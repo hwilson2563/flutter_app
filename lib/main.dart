@@ -4,13 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:namer_app/theme/theme_provider.dart';
-
-
 import 'package:badges/badges.dart' as badge;
+import 'package:skeletonizer/skeletonizer.dart'; // Import skeletonizer
 
 void main() {
   runApp(ChangeNotifierProvider(
-      create: (context) => ThemeProvider(), child: MyApp()));
+      create: (context) => ThemeProvider(), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -33,6 +32,7 @@ class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
   var history = <WordPair>[];
   var favorites = <WordPair>[];
+
   void getNext() {
     history.add(current);
     current = WordPair.random();
@@ -63,17 +63,13 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (selectedIndex) {
       case 0:
         page = GeneratorPage();
-        break;
       case 1:
         page = FavoritesPage();
-        break;
       case 2:
         page = SettingsPage();
-        break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
-
     return LayoutBuilder(builder: (context, constraints) {
       return Scaffold(
         body: Row(
@@ -82,15 +78,15 @@ class _MyHomePageState extends State<MyHomePage> {
               child: NavigationRail(
                 extended: constraints.maxWidth >= 600,
                 destinations: [
-                  NavigationRailDestination(
+                  const NavigationRailDestination(
                     icon: Icon(Icons.home),
                     label: Text('Home'),
                   ),
-                  NavigationRailDestination(
+                  const NavigationRailDestination(
                     icon: Icon(Icons.favorite),
                     label: Text('Favorites'),
                   ),
-                  NavigationRailDestination(
+                  const NavigationRailDestination(
                     icon: Icon(Icons.settings),
                     label: Text('Settings'),
                   ),
@@ -121,7 +117,7 @@ class FavoritesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     if (appState.favorites.isEmpty) {
-      return Center(
+      return const Center(
         child: Text('No favorites yet.'),
       );
     }
@@ -129,10 +125,10 @@ class FavoritesPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Favorite Words:'),
+          const Text('Favorite Words:'),
           for (var pair in appState.favorites)
             ListTile(
-              leading: Icon(Icons.favorite),
+              leading: const Icon(Icons.favorite),
               title: Text(pair.asLowerCase),
             ),
         ],
@@ -144,17 +140,16 @@ class FavoritesPage extends StatelessWidget {
 class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Update Theme:'),
+          const Text('Update Theme:'),
           FilledButton.tonal(
             onPressed: () {
               Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
             },
-            child: Text('Click Here!'),
+            child: const Text('Click Here!'),
           )
         ],
       ),
@@ -162,163 +157,456 @@ class SettingsPage extends StatelessWidget {
   }
 }
 
-class GeneratorPage extends StatelessWidget {
+// Modify GeneratorPage to include skeleton loading
+class GeneratorPage extends StatefulWidget {
+  @override
+  State<GeneratorPage> createState() => _GeneratorPageState();
+}
+
+class _GeneratorPageState extends State<GeneratorPage> {
+  bool _isLoading = true; // State to manage loading
+
+  @override
+  void initState() {
+    super.initState();
+    _loadContent();
+  }
+
+  Future<void> _loadContent() async {
+    // Simulate a network delay
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     var pair = appState.current;
-
     IconData icon;
     if (appState.favorites.contains(pair)) {
       icon = Icons.favorite;
     } else {
       icon = Icons.favorite_border;
     }
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          for (var pair in appState.history)
-            TextButton.icon(
-              onPressed: () {
-                print('button pressed!');
-              },
-              icon: appState.favorites.contains(pair)
-                  ? Icon(Icons.favorite, size: 12)
-                  : SizedBox(),
-              label: Text(
-                pair.asLowerCase,
-                semanticsLabel: pair.asPascalCase,
+
+    // Get colorScheme from the current Theme
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final darkColorScheme = ColorScheme.fromSeed(
+      seedColor: Theme.of(context)
+          .colorScheme
+          .primary, // Or any seed color you prefer for dark mode
+      brightness: Brightness.dark,
+    );
+
+    return SingleChildScrollView(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (var pair in appState.history)
+              TextButton.icon(
+                onPressed: () {
+                  print('button pressed!');
+                },
+                icon: appState.favorites.contains(pair)
+                    ? const Icon(Icons.favorite, size: 12)
+                    : const SizedBox(),
+                label: Text(
+                  pair.asLowerCase,
+                  semanticsLabel: pair.asPascalCase,
+                ),
+              ),
+            // --- White Container with Skeletonizer ---
+            Container(
+              color: Colors.white, // Explicit white background
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Skeletonizer(
+                enabled: _isLoading, // Enable/disable based on loading state
+                effect: ShimmerEffect(
+                    baseColor: colorScheme.surfaceContainerHighest,
+                  highlightColor: colorScheme.surfaceContainer),
+                child: Wrap(
+                  children: [
+                    // eXtendTech Theme
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF0C5E82),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: Folder(pair: pair)),
+                    // RED
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF862B31),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: Folder(pair: pair)),
+                    // ORANGE
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFFA04100),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: Folder(pair: pair)),
+                    // YELLOW
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFFB09E00),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: Folder(pair: pair)),
+                    // LIME GREEN
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF429227),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: Folder(pair: pair)),
+                    // GREEN
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF396B34),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: Folder(pair: pair)),
+                    // BLUE
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF00587D),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: Folder(pair: pair)),
+                    // PINK
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF862B5E),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: Folder(pair: pair)),
+                    // PURPLE
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF4D0067),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: Folder(pair: pair)),
+                  ],
+                ),
               ),
             ),
-          Wrap(
-            children: [
-              Theme(
-                  data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(
-                            seedColor: Color(0xFFFF0000), 
-                            dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-                            )),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFFFF8C00),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color.fromARGB(255, 255, 255, 255),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFF23D0D0),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFFB7FF01),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFF1D6327),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFF002AFE),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme:
-                          ColorScheme.fromSeed(seedColor: Color(0xFF7200FE),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme: ColorScheme.fromSeed(
-                    seedColor: Color(0xFFFE00BE),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-                  )),
-                  child: NewCard(pair: pair)),
-            ],
-          ),
-          Wrap(
-            children: [
-              Theme(
-                  data: ThemeData(
-                      colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color(0xFFFF0000),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-                          brightness: Brightness.dark)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color(0xFFFF8C00),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-                          
-                          brightness: Brightness.dark)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color(0xFFFFFF00),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-                          brightness: Brightness.dark)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color(0xFFB7FF01),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-                          brightness: Brightness.dark)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color(0xFF1D6327),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-                          brightness: Brightness.dark)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color(0xFF002AFE),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-                          brightness: Brightness.dark)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme: ColorScheme.fromSeed(
-                          seedColor: Color(0xff6750a4),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-                          brightness: Brightness.dark)),
-                  child: NewCard(pair: pair)),
-              Theme(
-                  data: ThemeData(
-                      colorScheme: ColorScheme.fromSeed(
-                    seedColor: Color(0xFFFE00BE),dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-                    brightness: Brightness.dark,
-                  )),
-                  child: NewCard(pair: pair)),
-            ],
-          ),
-          SizedBox(height: 10),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ElevatedButton.icon(
-                onPressed: () {
-                  appState.toggleFavorite();
-                },
-                icon: Icon(icon),
-                label: Text('Like'),
+            Container(
+              color: Colors.white, // Explicit white background
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Skeletonizer(
+                enabled: _isLoading,
+                effect: ShimmerEffect(
+                      baseColor: colorScheme.surfaceContainerHighest,
+                    highlightColor: colorScheme.surfaceContainer),
+                child: Wrap(
+                  children: [
+                    // eXtendTech Theme
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF0C5E82),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // RED
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF862B31),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // ORANGE
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFFA04100),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // YELLOW
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFFB09E00),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // LIME GREEN
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF429227),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // GREEN
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF396B34),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // BLUE
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF00587D),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // PINK
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF862B5E),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // PURPLE
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF4D0067),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                        )),
+                        child: NewCard(pair: pair)),
+                  ],
+                ),
               ),
-              SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: () {
-                  appState.getNext();
-                },
-                child: Text('Next'),
+            ),
+            // --- Black Container with Skeletonizer ---
+            Container(
+              color: const Color(0xFF222222), // Explicit black background
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Skeletonizer(
+                enabled: _isLoading,
+                effect: ShimmerEffect(
+                  baseColor: darkColorScheme.surfaceContainerHighest,
+                  highlightColor: colorScheme.surfaceContainer,
+                ),
+                child: Wrap(
+                  children: [
+                    // eXtendTech Theme
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF0C5E82),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: Folder(pair: pair)),
+                    // RED (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF862B31),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: Folder(pair: pair)),
+                    // ORANGE (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFFA04100),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: Folder(pair: pair)),
+                    // YELLOW (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFFB09E00),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: Folder(pair: pair)),
+                    // LIME GREEN (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF429227),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: Folder(pair: pair)),
+                    // GREEN (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF396B34),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: Folder(pair: pair)),
+                    // BLUE (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF00587D),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: Folder(pair: pair)),
+                    // PINK (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF862B5E),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: Folder(pair: pair)),
+                    // PURPLE (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF4D0067),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: Folder(pair: pair)),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ],
+            ),
+            Container(
+              color: const Color(0xFF222222), // Explicit black background
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Skeletonizer(
+                enabled: _isLoading,
+                effect: ShimmerEffect(
+                  baseColor: darkColorScheme.surfaceContainerHighest,
+                  highlightColor:  darkColorScheme.surfaceContainer,
+                ),
+                child: Wrap(
+                  children: [
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF0C5E82),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // RED (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF862B31),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // ORANGE (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFFA04100),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // YELLOW (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFFB09E00),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // LIME GREEN (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF429227),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // GREEN (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF396B34),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // BLUE (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF00587D),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // PINK (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF862B5E),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: NewCard(pair: pair)),
+                    // PURPLE (dark)
+                    Theme(
+                        data: ThemeData(
+                            colorScheme: ColorScheme.fromSeed(
+                          seedColor: const Color(0xFF4D0067),
+                          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                          brightness: Brightness.dark,
+                        )),
+                        child: NewCard(pair: pair)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    appState.toggleFavorite();
+                  },
+                  icon: Icon(icon),
+                  label: const Text('Like'),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    appState.getNext();
+                  },
+                  child: const Text('Next'),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -335,13 +623,15 @@ class NewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    
+
     return Padding(
       key: UniqueKey(),
       padding: const EdgeInsets.all(4.0),
       child: Card(
         elevation: 3.0,
         shadowColor: theme.colorScheme.shadow,
-        color: theme.colorScheme.primaryContainer,
+        color: theme.colorScheme.surfaceContainerLow,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -372,44 +662,26 @@ class NewCard extends StatelessWidget {
                       children: [
                         Icon(Icons.home, color: theme.colorScheme.primary),
                         Icon(Icons.more_vert,
-                            color: theme.colorScheme.onPrimaryFixed),
-                        badge.Badge(
-                          badgeStyle: BadgeStyle(
-                              shape: BadgeShape.circle,
-                              badgeColor:
-                                  theme.colorScheme.outline.withOpacity(.50)),
-                          position: BadgePosition.topEnd(top: 1.0, end: 1.0),
-                          showBadge: true,
-                          badgeContent: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: CustomToolTip(
-                              message: "Mobile Only",
-                              child: Icon(Icons.mobile_friendly,
-                                  color: theme.colorScheme.outlineVariant,
-                                  size: 22),
-                            ),
-                          ),
-                        ),
+                            color: theme.colorScheme.onSurface),
                       ],
                     ),
                   ),
                   Text('Title',
-                  style:TextStyle(color: theme.colorScheme.onPrimaryContainer),
+                      style: TextStyle(color: theme.colorScheme.onSurface),
                       maxLines: 3,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                       selectionColor: theme.colorScheme.onPrimaryContainer),
-                  SizedBox(),
+                  const SizedBox(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Icon(Icons.mobile_friendly,
-                          color: theme.colorScheme.onPrimaryContainer.withOpacity(.5
-                          )),
+                          color: theme.colorScheme.onSurface.withOpacity(.5)),
                       Text(
                         'Mobile Only',
-                        style:TextStyle(color: theme.colorScheme.onSecondaryContainer),
-                      
+                        style: TextStyle(
+                            color: theme.colorScheme.onSurface.withOpacity(.5)),
                       )
                     ],
                   )
@@ -418,6 +690,65 @@ class NewCard extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class Folder extends StatelessWidget {
+  const Folder({
+    super.key,
+    required this.pair,
+  });
+
+  final WordPair pair;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SizedBox(
+      key: const ValueKey('folder'),
+      width: 200.0,
+      child: Stack(
+        children: <Widget>[
+          Center(
+            child: Icon(
+              Icons.folder,
+              color: theme.colorScheme.surfaceContainerHighest,
+              size: 200.0,
+            ),
+          ),
+          Positioned(
+            top: 35,
+            left: 35,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Icon(
+                Icons.edit,
+                color: theme.colorScheme.primary,
+                size: 30.0,
+              ),
+            ),
+          ),
+          Positioned.fill(
+            // Use Positioned.fill to expand the Column to fill available space
+            child: Align(
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'Title',
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface,
+                      fontSize: 18.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
